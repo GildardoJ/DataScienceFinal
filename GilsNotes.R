@@ -67,6 +67,8 @@ nrow(d[d$AnyOpioid == "Y",])
 
 
 unique(d$Other)
+unique(d$OpiateNOS)
+unique(d$AnyOpioid)
 d$Other = factor(d$Other)
 sum(d$Other != "")
 
@@ -84,21 +86,21 @@ aggregate(conCensus$TOT_POP, by=list(Category=conCensus$CTYNAME), FUN=sum)
 
 
 
+colnames(d[21])
 
-s = 5
-
+unique(d$Fentanyl)
+sel = c(21:37)
+#names(d[,sel])
 for(val in sel){
-  s = sum(nrow(d[d$Heroin == "Y",]))/nrow(d)
+  
+  s = sum(nrow(d[d[,val] == "Y",]))/nrow(d)
+  print(names(d[val]))
   print(s)
+  
 }
 
 selected = dats[,c("CHSI_County_Name","Obesity")]
-
-
 total <- merge(data =  d,data =  selected, by=c("DeathCounty","CHSI_county_name"))
-
-
-
 counties = unique(conCensus$COUNTY)
 
 lapply(conCensus, FUN = sum )

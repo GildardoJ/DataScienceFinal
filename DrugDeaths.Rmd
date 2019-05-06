@@ -33,4 +33,28 @@ plot(table(d$Age[d$Heroin == "Y"]), xlab = "Age", ylab = "number of deaths with 
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+
+num = c(21:37)
+colCounts = 0;
+for(n in num ){
+  curr = nrow(d[d[,n] == "Y",])
+  if(n == 21){
+    colCounts = c(curr)
+  }else if ( n == 35){
+    colCounts = c(colCounts,nrow(d[d$Other != "",]))
+  }else {
+    colCounts = c(colCounts,curr)
+  }
+}
+
+name =  names(d[,21:37])
+
+par(las = 2,mar= c(9,4,3,1)+0.1)
+plot(colCounts, xaxt = "n", ylab = "Number of deaths", xlab = "", type = "l", col = "blue", main = "Number of deaths by drug type")
+axis(1, at=1:17, labels=name)
+
+```
+
