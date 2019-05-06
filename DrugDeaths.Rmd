@@ -1,0 +1,36 @@
+---
+title: "Great title"
+author: "Gildardo Orozco, Darren Cohen"
+date: "May 5, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+
+```{r cars}
+
+d = read.csv("Accidental_Drug_Related_Deaths_2012-2018.csv")
+dats = read.csv("C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Final_Project/chsi_dataset/RISKFACTORSANDACCESSTOCARE.csv")
+
+
+
+```
+
+## Data exploration
+
+
+
+```{r pressure, echo=FALSE}
+
+par(mfrow= c(1,2))
+plot(table(d$Age[d$Heroin != "Y"]), xlab = "Age", ylab = "number of deaths without Heroin", main = "Number of deaths by age", col = "green")
+plot(table(d$Age[d$Heroin == "Y"]), xlab = "Age", ylab = "number of deaths with Heroin", main = "Number of deaths by age", col = "red4")
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
