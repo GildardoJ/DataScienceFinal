@@ -10,7 +10,106 @@ conCensus = read.csv("C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Final_Proj
 summary(conCensus)
 summary(d)
 summary(dats)
+
+
+sum(is.na(dats))
+par(mfrow= c(2,1))
+dats[dats == -1111.1] <- NA     #cleaned data a bit on health data           
+plot((dats[dats$CHSI_State_Name == "California",]$Obesity ~ dats[dats$CHSI_State_Name == "California",]$No_Exercise))
+plot(table(dats$Obesity ~ dats$CHSI_State_Name))
+
+
+plot((dats[dats$CHSI_State_Name == "California",]$Obesity ~ dats[dats$CHSI_State_Name == "California",]$No_Exercise),ylim = c(0,40))
+plot((dats[dats$CHSI_State_Name == "Alabama",]$Obesity ~ dats[dats$CHSI_State_Name == "Alabama",]$No_Exercise),ylim = c(0,40))
+
+plot(dat[,])
+
+
+#plot by sex
+
+
+
+d$age_range[d$Sex == "Male"] = cut(d$Age[d$Sex == "Male"], breaks=c(0,20,25,30,35,40,45,50,55,60,100), labels=c("< 20", "20-25","25-30","30-35","35-40","40-45","45-50","50-55", "50-60", "> 60"))
+plot(d$age_range[d$Sex == "Male"] , col = "green", ylim= c(0,500))
+plot(d$age_range[d$Sex == "Female"], col = "red", ylim= c(0,500))
+
+
+#drugs_alcohol = dat$Driver.Substance.Abuse %in% c("ALCOHOL
+#CONTRIBUTED", "ALCOHOL PRESENT", "ILLEGAL DRUG CONTRIBUTED", "ILLEGAL DRUG PRESENT")
+
+sex = d$Sex  
+
+tbl = table( sex, d$age_range)
+tbl1 = apply(tbl, 2, function(x) x/sum(x))
+
+barplot(tbl1, xlab="Male to female ratio", legend=rownames(tbl),col=rainbow(4))
+
+# by race 
+
+# Install
+install.packages("wesanderson")
+# Load
+library(wesanderson)
+
+unique(d$Race)
+
+tbls = table( d$Race, d$age_range)
+tbls1 = apply(tbls, 2, function(x) x/sum(x))
+barplot(tbls1, xlab="race ratio", col=rainbow(12))
+
+# death by age, naive bayes predictor
+
+str(d)
 unique(d$DeathCounty)
+deathCity = unique(d$DeathCityGeo)
+deathCity = sort(deathCity)
+deathCity
+install.packages("e1071")
+library(e1071)
+
+tr_rows = sample(nrow(d), 0.8 * nrow(d))
+tr_dat = d[tr_rows,]
+te_dat = d[-tr_rows,]
+
+d$age_range = cut(d$Age, breaks=c(0,20,25,30,35,40,45,50,55,60,100), labels=c("< 20", "20-25","25-30","30-35","35-40","40-45","45-50","50-55", "50-60", "> 60"))
+plot(d$age_range)
+
+nrow(tr_dat)
+length(tr_dat$Sex)
+fit = naiveBayes(deathCity ~  Race , data=tr_dat)
+
+
+
+################
+#clustering by type of drugs
+head(d[,21:27])
+plot(d[,21] ~ d[,22])
+
+num_clusters = 5
+fit = kmeans(d[,21:27], num_clusters)
+library(cluster)
+
+sil = silhouette(fit$cluster, dist(dat))
+# plot the silhouette
+plot(sil)
+# average silhouette width
+sw = mean(sil[,3])
+
+
+# perform hierarchical clustering
+hc = hclust(dist(d), method="complete")
+# plot the "dendrogram"
+plot(hc)
+
+
+########
+# split race into white an non_white as the output
+table(d$Race)
+
+#make new column of 0 or 1 for white
+
+
+##############
 
 plot(table(d$Age))
 
