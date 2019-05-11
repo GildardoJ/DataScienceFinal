@@ -8,6 +8,16 @@ dat3 = read.csv("D:/Darren/Spring_2019/CST_383/finalProject/County_Age_Sex_Race_
 
 # Removes Fentanyl column, because there are only 4 fatalities
 
+# Splits data into test and training
+tr_rows = sample(nrow(dat), 0.7 * nrow(dat), replace = FALSE)
+
+tr_dat = dat[tr_rows,]
+
+te_dat = dat[-tr_rows,]
+
+# If equals zero, data was split correctly done
+(nrow(tr_dat) + nrow(te_dat)) - nrow(dat)
+
 
 # Turns 'Other' to ones and zeroes - this column had strings (drug names) rather than simple "Y" to 
 # indicate drug fatalities, so is handled differently than the other drug columns below
@@ -93,8 +103,12 @@ par(las = 2, mar = c(9, 4, 4, 4))
 plot(DrugDeaths)
 
 # Creates barplot of heroin deaths by race
+par(las = 2, mar = c(9, 4, 4, 4))
 tbl = table(dat$Heroin, dat$Race)
 barplot(tbl, col="darkblue", main="Deaths by Heroin")
+tbl
+
+summary(dat$Race)
 
 # Groups and sums heroin deaths by race 
 aggregate(Heroin ~ Race, data=dat, sum)
@@ -108,11 +122,45 @@ sum(dat[dat$Age > 35,]$Heroin)
 
 174/sum(dat$Heroin)
 
+BayesTheorem(PrA, PrBA)
 
 # Shows total rate of each drug involved in fatalities overall
 dat[,colNames] = apply(dat[,colNames], 2, sum(dat))
 
+# Predicts Heroin death based on age, race, and sex
+dat$Heroin = factor(dat$Heroin, labels=c("Not Heroin", "Heroin"))
+dat$Age = factor(dat$Age, labels=c("low", "high"))
+dat$Race = factor(dat$Race, labels=c("Black", "White", "Asian", "Hispanic"))
+dat$Sex = factor(dat$Sex, labels=c("Female", "Male"))
+# heart$fluor = factor(heart$fluor, labels=c("0", "1", "2", "3"))
+set.seed(123)
+fit = naiveBayes(Heroin ~ Age + Race + Sex + Location + COD + MannerofDeath + InjuryCityGeo + ResidenceCounty, data=tr_dat)
+predicts = predict(fit, newdata=te_dat)
+conf_mtx = table(predicts, te_dat$Heroin)
+conf_mtx
+mean(predicts == te_dat$Heroin)
 
+library(rpart)
+fit = rpart(Heroin ~ Race + Sex + Age, data=tr_dat)
+library(rpart.plot)
+# see rpart.plot documentation
+prp(fit, extra=1, varlen=-10, main="Regression Tree for Heroin Deaths", box.col="tan")
+
+# get predictions on test data
+predicted = predict(fit, te_dat)
+errors = te_dat$Heroin - predicted
+rmse = sqrt(mean(errors^2))
+
+fit2 = rpart(Heroin ~ ., data=tr_dat)
+predicted = predict(fit2, te_dat)
+plot_predict_actual(predicted, te_dat$Heroin, 2000,
+                    "regression tree Heroin prediction")
+errors = te_dat$Heroin - predicted
+hist(errors, col="red4",
+main="Histogram of errors, regression tree")
+
+predicted
+te_dat$Heroin
 
 table(aggregate(dat3$pop(unique(dat3$cty_name))))
 
